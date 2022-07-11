@@ -23,5 +23,11 @@ class Settings(BaseSettings):
 
     USER_NICK_NAME_PREFIX = 'user_'
 
+    REDIS_HOST: str = '192.168.31.57'
+    LOGIN_CODE_KEY_PREFIX: str = 'hmdp:login:code:'
+    LOGIN_CODE_EXPIRE: int = 2 * 60
+    LOGIN_USER_OBJ_KEY_PREFIX: str = 'hmdp:login:user:'
+    LOGIN_USER_OBJ_EXPIRE: int = 30 * 60
+
 
 settings = Settings()

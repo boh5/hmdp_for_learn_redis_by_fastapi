@@ -7,7 +7,9 @@
     :author: dilless(Huangbo)
     :date: 2022/7/10
 """
+import hashlib
 import random
+import uuid
 from typing import Optional
 
 from fastapi import APIRouter, Path, Query, Depends
@@ -20,6 +22,7 @@ from api import deps
 from app import schemas
 from core.config import settings
 from db.mysql import engine
+from utils.redis import redis, get_login_code_key, get_login_user_obj_key
 
 router = APIRouter()
 
@@ -28,12 +31,10 @@ router = APIRouter()
              response_model=schemas.GenericResponseModel)
 async def send_code(
         *,
-        request: Request,
-        phone: int = Query(),
+        phone: str = Query(),
 ):
     code = ''.join(random.sample(list(map(str, range(0, 10))), 6))
-    await request.session.load()
-    request.session.update({'code': code})
+    await redis.setex(get_login_code_key(phone), settings.LOGIN_CODE_EXPIRE, code)
     print('发送验证码成功，验证码：{}'.format(code))
     return schemas.GenericResponseModel()
 
@@ -42,11 +43,9 @@ async def send_code(
              response_model=schemas.GenericResponseModel)
 async def login(
         *,
-        request: Request,
         login_model: schemas.UserLoginModel,
 ):
-    await request.session.load()
-    cached_code = request.session.get('code')
+    cached_code = await redis.get(get_login_code_key(login_model.phone))
     if login_model.code is None or cached_code != login_model.code:
         return schemas.GenericResponseModel(success=False, error_msg='验证码错误')
 
@@ -54,15 +53,19 @@ async def login(
     if user is None:
         user = crud.user_crud.create_user_with_phone(phone=login_model.phone)
 
-    request.session.update({'user': user})
-    return schemas.GenericResponseModel()
+    token = hashlib.md5(str(user.id).encode()).hexdigest()
+    base_user = schemas.UserBaseModel.parse_obj(user)
+    await redis.hmset(get_login_user_obj_key(token), base_user.dict(exclude_none=True))
+    await redis.expire(get_login_user_obj_key(token), settings.LOGIN_USER_OBJ_EXPIRE)
+
+    return schemas.GenericResponseModel(data= token)
 
 
 @router.post('/logout',
              response_model=schemas.GenericResponseModel)
 async def logout(
         *,
-        user: models.User = Depends(deps.verify_user),
+        user: schemas.UserBaseModel = Depends(deps.verify_user),
 ):
     pass
 
@@ -71,7 +74,7 @@ async def logout(
             response_model=schemas.GenericResponseModel)
 async def me(
         *,
-        user: models.User = Depends(deps.verify_user),
+        user: schemas.UserBaseModel = Depends(deps.verify_user),
 
 ):
     return schemas.GenericResponseModel(data=schemas.UserBaseModel.parse_obj(user))
