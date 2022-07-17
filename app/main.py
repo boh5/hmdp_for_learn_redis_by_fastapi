@@ -7,6 +7,7 @@
     :author: dilless(Huangbo)
     :date: 2022/7/10
 """
+
 from fastapi import FastAPI, Depends
 from starsessions import SessionMiddleware, InMemoryBackend
 

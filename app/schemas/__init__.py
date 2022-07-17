@@ -10,3 +10,4 @@
 from .response import GenericResponseModel
 from .blog import *
 from .user import *
+from .redis import *

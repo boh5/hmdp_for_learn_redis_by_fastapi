@@ -23,11 +23,14 @@ class Shop(SQLModel, table=True):
     area: Optional[str] = None
     address: str
     x: float
-    x: float
+    y: float
     avg_price: Optional[int] = Field(default=None, alias='avgPrice')
     sold: int
     comments: int
     score: int
-    open_hours: Optional[str]
+    open_hours: Optional[str] = Field(default=None, alias='openHours')
     create_time: datetime.datetime = Field(default=datetime.datetime.now(), alias='createTime')
     update_time: datetime.datetime = Field(default_factory=datetime.datetime.now, alias='updateTime')
+
+    class Config:
+        allow_population_by_field_name = True

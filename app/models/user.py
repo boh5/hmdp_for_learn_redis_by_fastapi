@@ -22,4 +22,4 @@ class User(SQLModel, table=True):
     nick_name: Optional[str] = Field(default=None, max_length=32, alias='nickName')
     icon: Optional[str] = Field(default=None, max_length=255)
     create_time: datetime.datetime = Field(default=datetime.datetime.now(), alias='createTime')
-    update_time: datetime.datetime = Field(default_factory=datetime.datetime.now, alias='createTime')
+    update_time: datetime.datetime = Field(default_factory=datetime.datetime.now, alias='updateTime')

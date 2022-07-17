@@ -21,4 +21,4 @@ class ShopType(SQLModel, table=True):
     icon: Optional[str] = Field(default=None, max_length=255)
     sort: Optional[int] = Field(default=None)
     create_time: datetime.datetime = Field(default=datetime.datetime.now(), alias='createTime')
-    update_time: datetime.datetime = Field(default_factory=datetime.datetime.now, alias='createTime')
+    update_time: datetime.datetime = Field(default_factory=datetime.datetime.now, alias='updateTime')

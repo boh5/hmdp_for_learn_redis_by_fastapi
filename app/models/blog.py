@@ -25,7 +25,7 @@ class Blog(SQLModel, table=True):
     liked: Optional[int] = None
     comments: Optional[int] = None
     create_time: datetime.datetime = Field(default=datetime.datetime.now(), alias='createTime')
-    update_time: datetime.datetime = Field(default_factory=datetime.datetime.now, alias='createTime')
+    update_time: datetime.datetime = Field(default_factory=datetime.datetime.now, alias='updateTime')
 
 
 if __name__ == '__main__':

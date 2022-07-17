@@ -29,5 +29,12 @@ class Settings(BaseSettings):
     LOGIN_USER_OBJ_KEY_PREFIX: str = 'hmdp:login:user:'
     LOGIN_USER_OBJ_EXPIRE: int = 30 * 60
 
+    CACHE_EXPIRE: int = 30 * 60
+    CACHE_NONE_EXPIRE: int = 2 * 60
+    CACHE_SHOP_KEY_PREFIX: str = 'hmdp:cache:shop:'
+    CACHE_SHOP_TYPE_KEY_PREFIX: str = 'hmdp:cache:shop-type:'
+
+    CACHE_LOCK_EXPIRE: int = 10
+    CACHE_LOCK_KEY_PREFIX: str = 'hmdp:lock:'
 
 settings = Settings()
