@@ -23,3 +23,6 @@ class User(SQLModel, table=True):
     icon: Optional[str] = Field(default=None, max_length=255)
     create_time: datetime.datetime = Field(default=datetime.datetime.now(), alias='createTime')
     update_time: datetime.datetime = Field(default_factory=datetime.datetime.now, alias='updateTime')
+
+    class Config:
+        allow_population_by_field_name = True

@@ -12,3 +12,5 @@ from .shop_type import *
 from .user import *
 from .shop import *
 from .voucher import *
+from .seckill_voucher import *
+from .voucher_order import *

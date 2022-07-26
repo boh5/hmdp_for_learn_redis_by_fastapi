@@ -27,3 +27,6 @@ class Voucher(SQLModel, table=True):
     actual_value: int = Field(alias='actualValue')
     type: int
     status: int
+
+    class Config:
+        allow_population_by_field_name = True

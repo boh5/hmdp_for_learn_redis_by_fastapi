@@ -27,11 +27,15 @@ class Blog(SQLModel, table=True):
     create_time: datetime.datetime = Field(default=datetime.datetime.now(), alias='createTime')
     update_time: datetime.datetime = Field(default_factory=datetime.datetime.now, alias='updateTime')
 
+    class Config:
+        allow_population_by_field_name = True
+
 
 if __name__ == '__main__':
     engine = create_engine('mysql+pymysql://root:root@localhost/hmdp')
     with Session(engine) as sess:
         statement = select(Blog)
+        statement = 'SELECT * FROM tb_blog'
         results = sess.exec(statement)
         for r in results:
             print(r)

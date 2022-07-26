@@ -1,11 +1,11 @@
 """
-    shop_type
+    seckill_voucher
     ~~~
 
     
 
     :author: dilless(Huangbo)
-    :date: 2022/7/11
+    :date: 2022/7/25
 """
 import datetime
 from typing import Optional
@@ -13,15 +13,15 @@ from typing import Optional
 from sqlmodel import SQLModel, Field
 
 
-class ShopType(SQLModel, table=True):
-    __tablename__ = 'tb_shop_type'
+class SeckillVoucher(SQLModel, table=True):
+    __tablename__ = 'tb_seckill_voucher'
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: Optional[str] = Field(default=None, max_length=32)
-    icon: Optional[str] = Field(default=None, max_length=255)
-    sort: Optional[int] = Field(default=None)
+    voucher_id: Optional[int] = Field(default=None, primary_key=True)
     create_time: datetime.datetime = Field(default=datetime.datetime.now(), alias='createTime')
     update_time: datetime.datetime = Field(default_factory=datetime.datetime.now, alias='updateTime')
+    stock: int
+    begin_time: datetime.datetime = Field(alias='beginTime')
+    end_time: datetime.datetime = Field(alias='endTime')
 
     class Config:
         allow_population_by_field_name = True
