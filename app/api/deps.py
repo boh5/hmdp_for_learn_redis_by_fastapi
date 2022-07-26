@@ -16,11 +16,11 @@ from starlette.requests import Request
 import models
 import schemas
 from core.config import settings
-from utils.redis import redis, get_login_user_obj_key
+from utils.redis import aio_redis, get_login_user_obj_key
 
 
 async def verify_user(authorization: str = Header()) -> schemas.UserBaseModel:
-    user_dict = await redis.hgetall(get_login_user_obj_key(authorization))
+    user_dict = await aio_redis.hgetall(get_login_user_obj_key(authorization))
     if not user_dict:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
 
@@ -30,6 +30,6 @@ async def verify_user(authorization: str = Header()) -> schemas.UserBaseModel:
 
 async def refresh_user_obj_in_redis(authorization: Optional[str] = Header(default=None)):
     if authorization:
-        is_key_exists = await redis.exists(get_login_user_obj_key(authorization))
+        is_key_exists = await aio_redis.exists(get_login_user_obj_key(authorization))
         if is_key_exists:
-            await redis.expire(get_login_user_obj_key(authorization), settings.LOGIN_USER_OBJ_EXPIRE)
+            await aio_redis.expire(get_login_user_obj_key(authorization), settings.LOGIN_USER_OBJ_EXPIRE)

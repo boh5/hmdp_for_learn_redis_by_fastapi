@@ -18,7 +18,7 @@ import crud
 import models
 import schemas
 from core.config import settings
-from utils.redis import redis, get_cache_shop_type_list_key
+from utils.redis import aio_redis, get_cache_shop_type_list_key
 
 router = APIRouter()
 
@@ -28,11 +28,11 @@ router = APIRouter()
 async def list_shop_type(
 
 ):
-    shop_type_list_str = await redis.get(get_cache_shop_type_list_key())
+    shop_type_list_str = await aio_redis.get(get_cache_shop_type_list_key())
     if not shop_type_list_str:
         shop_type_obj_list = crud.shop_type_crud.list_shop_type()
-        await redis.setex(get_cache_shop_type_list_key(), settings.CACHE_EXPIRE,
-                          json.dumps(jsonable_encoder(shop_type_obj_list)))
+        await aio_redis.setex(get_cache_shop_type_list_key(), settings.CACHE_EXPIRE,
+                              json.dumps(jsonable_encoder(shop_type_obj_list)))
     else:
         print('list_shop_type 没用打到 mysql ')
         shop_type_obj_list = parse_obj_as(List[models.ShopType], json.loads(shop_type_list_str))

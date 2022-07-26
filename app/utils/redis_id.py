@@ -12,7 +12,7 @@ import time
 
 from aioredis import Redis
 
-from utils.redis import redis
+from utils.redis import aio_redis
 
 
 class RedisIdWorker:
@@ -36,7 +36,7 @@ class RedisIdWorker:
         return timestamp << self.COUNT_BITS | count
 
 
-redis_id_worker = RedisIdWorker(redis=redis)
+redis_id_worker = RedisIdWorker(redis=aio_redis)
 
 if __name__ == '__main__':
     import asyncio

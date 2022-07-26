@@ -37,4 +37,6 @@ class Settings(BaseSettings):
     CACHE_LOCK_EXPIRE: int = 10
     CACHE_LOCK_KEY_PREFIX: str = 'hmdp:lock:'
 
+    REDIS_LOCK_KEY_PREFIX: str = 'hmdp:lock:'
+
 settings = Settings()

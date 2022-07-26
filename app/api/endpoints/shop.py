@@ -24,11 +24,11 @@ from app import schemas
 from core.config import settings
 from db.mysql import engine
 from utils.cache import CacheClient
-from utils.redis import redis, get_cache_shop_key, lock, get_cache_lock_shop_key, unlock, save_shop_2_redis
+from utils.redis import aio_redis, get_cache_shop_key, lock, get_cache_lock_shop_key, unlock, save_shop_2_redis
 
 router = APIRouter()
 
-cache_client = CacheClient(redis)
+cache_client = CacheClient(aio_redis)
 
 
 # async def query_shop_with_pass_through(id):
@@ -51,7 +51,7 @@ cache_client = CacheClient(redis)
 
 
 async def query_shop_with_mutex(id):
-    shop_json_str = await redis.get(get_cache_shop_key(id))
+    shop_json_str = await aio_redis.get(get_cache_shop_key(id))
     if shop_json_str is None:
         try:
             lock_status = await lock(get_cache_lock_shop_key(id))
@@ -64,9 +64,9 @@ async def query_shop_with_mutex(id):
                 print('!!!打到数据库了!!!')
                 await asyncio.sleep(200 / 1000)  # 模拟缓存重建延迟
             if shop:
-                await redis.setex(get_cache_shop_key(id), settings.CACHE_EXPIRE, shop.json())
+                await aio_redis.setex(get_cache_shop_key(id), settings.CACHE_EXPIRE, shop.json())
             else:
-                await redis.setex(get_cache_shop_key(id), settings.CACHE_NONE_EXPIRE, '')
+                await aio_redis.setex(get_cache_shop_key(id), settings.CACHE_NONE_EXPIRE, '')
         finally:
             await unlock(get_cache_lock_shop_key(id))
     else:
@@ -175,7 +175,7 @@ async def update_shop(
             shop_in_db.__setattr__(field, value)
         try:
             sess.add(shop_in_db)
-            await redis.delete(get_cache_shop_key(shop.id))
+            await aio_redis.delete(get_cache_shop_key(shop.id))
             sess.commit()
         except Exception as e:
             print(e)

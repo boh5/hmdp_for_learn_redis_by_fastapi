@@ -15,10 +15,13 @@ from sqlmodel import Session, select
 
 import models
 import schemas
+import redis
 from core.config import settings
 from db.mysql import engine
 
-redis = aioredis.from_url(f'redis://{settings.REDIS_HOST}', decode_responses=True)
+redis_url = f'redis://{settings.REDIS_HOST}'
+aio_redis = aioredis.from_url(redis_url, decode_responses=True)
+redis = redis.Redis.from_url(redis_url)
 
 
 def get_login_code_key(phone: str) -> str:
@@ -42,7 +45,7 @@ def get_cache_lock_shop_key(id: int) -> str:
 
 
 async def lock(key):
-    async with redis.pipeline() as pipe:
+    async with aio_redis.pipeline() as pipe:
         flag, _ = await pipe.setnx(key, '1').expire(key, settings.CACHE_LOCK_EXPIRE).execute()
     if flag:
         return True
@@ -50,14 +53,14 @@ async def lock(key):
 
 
 async def unlock(key):
-    await redis.delete(key)
+    await aio_redis.delete(key)
 
 
 async def set_with_logic_expire(key, data, expire):
     model = schemas.RedisDataModel[models.Shop](
         expire_time=datetime.datetime.now() + datetime.timedelta(seconds=expire),
         data=data)
-    await redis.set(key, model.json())
+    await aio_redis.set(key, model.json())
 
 
 async def save_shop_2_redis(id: int, expire: int):
