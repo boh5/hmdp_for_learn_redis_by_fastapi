@@ -7,7 +7,7 @@
     :author: dilless(Huangbo)
     :date: 2022/7/10
 """
-from typing import Optional
+from typing import Optional, List
 
 from fastapi import APIRouter, Path, Query
 from sqlmodel import Session, select
@@ -18,12 +18,13 @@ import models
 from app import schemas
 from core.config import settings
 from db.mysql import engine
+from utils.redis_ import aio_redis
 
 router = APIRouter()
 
 
 @router.get('/list/{shop_id}',
-            response_model=schemas.GenericResponseModel)
+            response_model=schemas.GenericResponseModel[List[schemas.SeckillVoucherModel]])
 async def query_voucher_of_shop(
         *,
         shop_id: int = Path,
@@ -59,5 +60,6 @@ async def add_seckill_voucher(
         *,
         model: schemas.SeckillVoucherCreateModel,
 ):
-    model = crud.voucher_crud.create_seckill(model)
-    return schemas.GenericResponseModel(data=model.id)
+    voucher, seckill_voucher = crud.voucher_crud.create_seckill(model)
+    await aio_redis.set(settings.CACHE_SECKILL_STOCK_KEY_PREFIX + str(voucher.id), seckill_voucher.stock)
+    return schemas.GenericResponseModel(data=voucher.id)

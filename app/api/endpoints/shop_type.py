@@ -18,7 +18,7 @@ import crud
 import models
 import schemas
 from core.config import settings
-from utils.redis import aio_redis, get_cache_shop_type_list_key
+from utils.redis_ import aio_redis, get_cache_shop_type_list_key
 
 router = APIRouter()
 

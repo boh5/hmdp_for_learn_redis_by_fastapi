@@ -7,6 +7,7 @@
     :author: dilless(Huangbo)
     :date: 2022/7/10
 """
+import asyncio
 import hashlib
 import random
 import uuid
@@ -22,7 +23,7 @@ from api import deps
 from app import schemas
 from core.config import settings
 from db.mysql import engine
-from utils.redis import aio_redis, get_login_code_key, get_login_user_obj_key
+from utils.redis_ import aio_redis, get_login_code_key, get_login_user_obj_key
 
 router = APIRouter()
 
@@ -58,7 +59,7 @@ async def login(
     await aio_redis.hmset(get_login_user_obj_key(token), base_user.dict(exclude_none=True))
     await aio_redis.expire(get_login_user_obj_key(token), settings.LOGIN_USER_OBJ_EXPIRE)
 
-    return schemas.GenericResponseModel(data= token)
+    return schemas.GenericResponseModel(data=token)
 
 
 @router.post('/logout',
@@ -78,3 +79,28 @@ async def me(
 
 ):
     return schemas.GenericResponseModel(data=schemas.UserBaseModel.parse_obj(user))
+
+
+if __name__ == '__main__':
+    async def do_job(u, lock):
+        code = await send_code(phone=u.phone)
+        login_obj = schemas.UserLoginModel(
+            phone=u.phone,
+            code=code,
+        )
+        login_resp = await login(login_model=login_obj)
+        token = login_resp.data
+        async with lock:
+            with open('../../../token.txt', 'a', encoding='utf-8') as f:
+                f.write(token + '\n')
+
+
+    async def main():
+        with Session(engine) as sess:
+            users = sess.exec(select(models.User)).all()[:1000]
+        lock = asyncio.Lock()
+        for u in users:
+            await do_job(u, lock)
+
+
+    asyncio.run(main())

@@ -17,7 +17,7 @@ from aioredis import Redis
 from pydantic import BaseModel
 
 import schemas
-from utils.redis import lock, get_cache_lock_shop_key, set_with_logic_expire, unlock
+from utils.redis_ import lock, get_cache_lock_shop_key, set_with_logic_expire, unlock
 
 
 class CacheClient:

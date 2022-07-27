@@ -24,7 +24,7 @@ from app import schemas
 from core.config import settings
 from db.mysql import engine
 from utils.cache import CacheClient
-from utils.redis import aio_redis, get_cache_shop_key, lock, get_cache_lock_shop_key, unlock, save_shop_2_redis
+from utils.redis_ import aio_redis, get_cache_shop_key, lock, get_cache_lock_shop_key, unlock, save_shop_2_redis
 
 router = APIRouter()
 

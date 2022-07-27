@@ -13,4 +13,4 @@ from core.config import settings
 
 engine = create_engine(
     f'mysql+pymysql://{settings.MYSQL_USER}:{settings.MYSQL_PASSWORD}@{settings.MYSQL_HOST}'
-    f':{settings.MYSQL_PORT}/{settings.MYSQL_DATABASE}', pool_size=100)
+    f':{settings.MYSQL_PORT}/{settings.MYSQL_DATABASE}', pool_size=1000)

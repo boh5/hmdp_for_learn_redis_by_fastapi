@@ -27,12 +27,15 @@ class Settings(BaseSettings):
     LOGIN_CODE_KEY_PREFIX: str = 'hmdp:login:code:'
     LOGIN_CODE_EXPIRE: int = 2 * 60
     LOGIN_USER_OBJ_KEY_PREFIX: str = 'hmdp:login:user:'
-    LOGIN_USER_OBJ_EXPIRE: int = 30 * 60
+    LOGIN_USER_OBJ_EXPIRE: int = 60 * 60 * 24 * 365
 
     CACHE_EXPIRE: int = 30 * 60
     CACHE_NONE_EXPIRE: int = 2 * 60
     CACHE_SHOP_KEY_PREFIX: str = 'hmdp:cache:shop:'
     CACHE_SHOP_TYPE_KEY_PREFIX: str = 'hmdp:cache:shop-type:'
+    CACHE_SECKILL_KEY_PREFIX: str = 'hmdp:seckill:'
+    CACHE_SECKILL_STOCK_KEY_PREFIX: str = CACHE_SECKILL_KEY_PREFIX + 'stock:'
+    CACHE_SECKILL_ORDER_KEY_PREFIX: str = CACHE_SECKILL_KEY_PREFIX + 'order:'
 
     CACHE_LOCK_EXPIRE: int = 10
     CACHE_LOCK_KEY_PREFIX: str = 'hmdp:lock:'

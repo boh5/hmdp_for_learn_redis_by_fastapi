@@ -16,7 +16,7 @@ from starlette.requests import Request
 import models
 import schemas
 from core.config import settings
-from utils.redis import aio_redis, get_login_user_obj_key
+from utils.redis_ import aio_redis, get_login_user_obj_key
 
 
 async def verify_user(authorization: str = Header()) -> schemas.UserBaseModel:

@@ -12,7 +12,7 @@ import time
 
 from aioredis import Redis
 
-from utils.redis import aio_redis
+from utils.redis_ import aio_redis
 
 
 class RedisIdWorker:

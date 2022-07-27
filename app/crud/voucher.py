@@ -33,10 +33,11 @@ class VoucherCRUD:
                 sess.add(seckill_voucher)
                 sess.commit()
                 sess.refresh(voucher)
+                sess.refresh(seckill_voucher)
             except Exception:
                 sess.rollback()
 
-        return voucher
+        return voucher, seckill_voucher
 
 
 voucher_crud = VoucherCRUD()
