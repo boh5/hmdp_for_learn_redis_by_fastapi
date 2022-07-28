@@ -21,7 +21,7 @@ from db.mysql import engine
 
 redis_url = f'redis://{settings.REDIS_HOST}'
 aio_redis = aioredis.from_url(redis_url, decode_responses=True)
-redis = redis.Redis.from_url(redis_url)
+redis = redis.Redis.from_url(redis_url, decode_responses=True)
 
 
 def get_login_code_key(phone: str) -> str:
