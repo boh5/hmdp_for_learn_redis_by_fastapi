@@ -15,3 +15,4 @@ from .voucher import *
 from .seckill_voucher import *
 from .voucher_order import *
 from .user_info import *
+from .follow import *

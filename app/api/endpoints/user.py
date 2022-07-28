@@ -81,6 +81,16 @@ async def me(
     return schemas.GenericResponseModel(data=schemas.UserBaseModel.parse_obj(user))
 
 
+@router.get('/{user_id}',
+            response_model=schemas.GenericResponseModel)
+async def get_user(
+        *,
+        user_id: int = Path(),
+):
+    user = crud.user_crud.get_by_id(pk=user_id)
+    return schemas.GenericResponseModel(data=schemas.UserBaseModel.parse_obj(user))
+
+
 @router.get('/info/{user_id}',
             response_model=schemas.GenericResponseModel)
 async def info(

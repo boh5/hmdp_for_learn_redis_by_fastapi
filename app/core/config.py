@@ -44,7 +44,9 @@ class Settings(BaseSettings):
 
     IMAGE_UPLOAD_DIR: str = 'D:/Files/codes/java/learn_redis/nginx-1.18.0/html/hmdp/imgs'
 
-    BLOG_LIKEED_KEY_PREFIX: str = 'hmdp:blog:liked:'
+    BLOG_LIKED_KEY_PREFIX: str = 'hmdp:blog:liked:'
+    FOLLOW_KEY_PREFIX: str = 'hmdp:follows:'
+    FEED_KEY_PREFIX: str = 'hmdp:feed:'
 
 
 settings = Settings()

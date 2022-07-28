@@ -12,3 +12,4 @@ from .shop_type import *
 from .user import *
 from .shop import *
 from .voucher import *
+from .follow import *

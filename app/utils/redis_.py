@@ -11,7 +11,8 @@ import asyncio
 import datetime
 import time
 
-import aioredis
+# import aioredis
+from redis import asyncio as aioredis
 from sqlmodel import Session, select
 
 import models
@@ -74,25 +75,71 @@ async def save_shop_2_redis(id: int, expire: int):
 
 
 # blog like utils
+class BlogLikeUtils:
+    @staticmethod
+    async def is_user_liked_blog(blog_id, user_id):
+        score = await aio_redis.zscore(settings.BLOG_LIKED_KEY_PREFIX + str(blog_id), str(user_id))
+        if score:
+            return True
+        return False
 
-async def is_user_liked_blog(blog_id, user_id):
-    score = await aio_redis.zscore(settings.BLOG_LIKEED_KEY_PREFIX + str(blog_id), str(user_id))
-    if score:
-        return True
-    return False
+    @staticmethod
+    async def like_blog_redis(blog_id, user_id):
+        await aio_redis.zadd(settings.BLOG_LIKED_KEY_PREFIX + str(blog_id), {str(user_id): time.time_ns()})
+
+    @staticmethod
+    async def unlike_blog_redis(blog_id, user_id):
+        await aio_redis.zrem(settings.BLOG_LIKED_KEY_PREFIX + str(blog_id), str(user_id))
+
+    @staticmethod
+    async def get_top_like_user_ids(blog_id):
+        user_ids = await aio_redis.zrange(settings.BLOG_LIKED_KEY_PREFIX + str(blog_id), 0, 4)
+        return user_ids
 
 
-async def like_blog_redis(blog_id, user_id):
-    await aio_redis.zadd(settings.BLOG_LIKEED_KEY_PREFIX + str(blog_id), {str(user_id): time.time_ns()})
+class FollowUtils:
+    @staticmethod
+    async def add_follow(user_id, follow_user_id):
+        await aio_redis.sadd(settings.FOLLOW_KEY_PREFIX + str(user_id), follow_user_id)
+
+    @staticmethod
+    async def remove_follow(user_id, follow_user_id):
+        await aio_redis.srem(settings.FOLLOW_KEY_PREFIX + str(user_id), follow_user_id)
+
+    @staticmethod
+    async def get_common_follow(user_id1, user_id2) -> set:
+        commons = await aio_redis.sinter(settings.FOLLOW_KEY_PREFIX + str(user_id1),
+                                         settings.FOLLOW_KEY_PREFIX + str(user_id2))
+        return commons
 
 
-async def unlike_blog_redis(blog_id, user_id):
-    await aio_redis.zrem(settings.BLOG_LIKEED_KEY_PREFIX + str(blog_id), str(user_id))
+class FeedUtils:
+    @staticmethod
+    async def push_feed(user_id, blog_id):
+        await aio_redis.zadd(settings.FEED_KEY_PREFIX + str(user_id), {blog_id: int(time.time() * 1000)})
 
+    @staticmethod
+    async def get_feed_blog(user_id, last_id, offset):
+        response = await aio_redis.zrevrangebyscore(name=settings.FEED_KEY_PREFIX + str(user_id),
+                                                    max=last_id,
+                                                    min=0,
+                                                    start=offset,
+                                                    num=settings.MAX_PAGE_SIZE,
+                                                    withscores=True)  # min, max 参数相反是 aioredis 的 bug
+        if not response:
+            return None, None, None
 
-async def get_top_like_user_ids(blog_id):
-    user_ids = await aio_redis.zrange(settings.BLOG_LIKEED_KEY_PREFIX + str(blog_id), 0, 4)
-    return user_ids
+        blog_ids = []
+        min_score = 0
+        min_score_count = 0
+        for blog_id, score in response:
+            blog_ids.append(blog_id)
+            if score == min_score:
+                min_score_count += 1
+            else:
+                min_score = score
+                min_score_count = 1
+        return blog_ids, min_score, min_score_count
 
 
 if __name__ == '__main__':

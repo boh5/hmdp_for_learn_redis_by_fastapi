@@ -10,7 +10,7 @@
 from typing import List
 
 import pymysql.cursors
-from sqlmodel import Session, select
+from sqlmodel import Session, select, col
 
 import models
 from app import schemas
@@ -54,6 +54,13 @@ class BlogCRUD:
                 statement = statement.where(models.Blog.user_id == user_id)
             results = sess.exec(statement).all()
         return results
+
+    def list_id_in(self, ids: List[int]):
+        with Session(engine) as sess:
+            blogs = sess.exec(
+                select(models.Blog).where(col(models.Blog.id).in_(ids))
+            ).all()
+        return blogs
 
 
 blog_crud = BlogCRUD()

@@ -7,3 +7,5 @@ starsessions==1.2.3
 aioredis[hiredis]==2.0.1
 pytest==7.1.2
 python-multipart==0.0.5
+redis[hiredis]==4.3.4
+types-redis==4.3.11  # fix redis auto-complete in pycharm. ex: from redis import asyncio

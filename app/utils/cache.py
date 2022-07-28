@@ -15,15 +15,18 @@ from typing import Callable, Hashable, Any, Sequence, Type, Optional
 
 from aioredis import Redis
 from pydantic import BaseModel
+from sqlmodel import Session, select
 
+import models
 import schemas
-from utils.redis_ import lock, get_cache_lock_shop_key, set_with_logic_expire, unlock
+from core.config import settings
+from db.mysql import engine
+from utils.redis_ import lock, get_cache_lock_shop_key, set_with_logic_expire, unlock, aio_redis
 
 
 class CacheClient:
     def __init__(self, redis: Redis):
         self.redis = redis
-        self.thread_executor = concurrent.futures.ThreadPoolExecutor()
 
     async def set(self, key: str, model: BaseModel, expire: int):
         await self.redis.setex(key, expire, model.json())
@@ -87,7 +90,7 @@ class CacheClient:
                             try:
                                 db_model = db_fallback(pk)
                                 await asyncio.sleep(10)
-                                await set_with_logic_expire(key, db_model, expire)
+                                await self.set_with_logical_expire(key, db_model, expire)
                             finally:
                                 await unlock(get_cache_lock_shop_key(pk))
 
@@ -97,3 +100,24 @@ class CacheClient:
                         print('query_shop_by_id 没用获取到锁 没有打到mysql')
 
         return model
+
+
+if __name__ == '__main__':
+    cache_client = CacheClient(redis=aio_redis)
+
+
+    async def save_shop_to_redis(shop: models.Shop):
+        key = settings.CACHE_SHOP_KEY_PREFIX + str(shop.id)
+        await cache_client.set_with_logical_expire(key, shop, 10)
+
+
+    async def main():
+
+        with Session(engine) as sess:
+            shops = sess.exec(select(models.Shop)).all()
+        tasks = []
+        for shop in shops:
+            tasks.append(asyncio.create_task(save_shop_to_redis(shop)))
+        done, _ = await asyncio.wait(tasks)
+
+    asyncio.run(main())
