@@ -14,7 +14,7 @@ from concurrent import futures
 from typing import Optional
 
 from fastapi import APIRouter, Path, Query, HTTPException, Body
-from sqlmodel import Session, select
+from sqlmodel import Session, select, col
 from starlette.requests import Request
 from fastapi.background import BackgroundTasks
 
@@ -146,12 +146,31 @@ async def query_shop_by_id(
 async def query_shop_by_type(
         *,
         type_id: int = Query(alias='typeId'),
-        page: int = Query(alias='current')
+        page: int = Query(1, alias='current')
 ):
     if page <= 0:
         page = 1
     with Session(engine) as sess:
         statement = select(models.Shop).where(models.Shop.type_id == type_id).limit(settings.MAX_PAGE_SIZE).offset(
+            page * settings.MAX_PAGE_SIZE - settings.MAX_PAGE_SIZE)
+        results = sess.exec(statement).all()
+    data = [r.dict(by_alias=True) for r in results]
+    return schemas.GenericResponseModel(data=data)
+
+
+@router.get('/of/name',
+            response_model=schemas.GenericResponseModel)
+async def query_shop_by_name(
+        *,
+        name: str = Query(''),
+        page: int = Query(1, alias='current'),
+):
+    if page <= 0:
+        page = 1
+
+    with Session(engine) as sess:
+        statement = select(models.Shop).where(col(models.Shop.name).contains(name)).limit(
+            settings.MAX_PAGE_SIZE).offset(
             page * settings.MAX_PAGE_SIZE - settings.MAX_PAGE_SIZE)
         results = sess.exec(statement).all()
     data = [r.dict(by_alias=True) for r in results]

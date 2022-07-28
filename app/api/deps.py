@@ -28,6 +28,15 @@ async def verify_user(authorization: str = Header()) -> schemas.UserBaseModel:
     return user
 
 
+async def try_user(authorization: str = Header()) -> Optional[schemas.UserBaseModel]:
+    user_dict = await aio_redis.hgetall(get_login_user_obj_key(authorization))
+    if not user_dict:
+        return None
+
+    user = schemas.UserBaseModel.parse_obj(user_dict)
+    return user
+
+
 async def refresh_user_obj_in_redis(authorization: Optional[str] = Header(default=None)):
     if authorization:
         is_key_exists = await aio_redis.exists(get_login_user_obj_key(authorization))

@@ -42,4 +42,9 @@ class Settings(BaseSettings):
 
     REDIS_LOCK_KEY_PREFIX: str = 'hmdp:lock:'
 
+    IMAGE_UPLOAD_DIR: str = 'D:/Files/codes/java/learn_redis/nginx-1.18.0/html/hmdp/imgs'
+
+    BLOG_LIKEED_KEY_PREFIX: str = 'hmdp:blog:liked:'
+
+
 settings = Settings()

@@ -9,6 +9,7 @@
 """
 import asyncio
 import datetime
+import time
 
 import aioredis
 from sqlmodel import Session, select
@@ -70,6 +71,28 @@ async def save_shop_2_redis(id: int, expire: int):
         shop = sess.exec(statement).one()
     await asyncio.sleep(200 / 1000)  # 模拟重建延迟
     await set_with_logic_expire(get_cache_shop_key(id), shop, 20)
+
+
+# blog like utils
+
+async def is_user_liked_blog(blog_id, user_id):
+    score = await aio_redis.zscore(settings.BLOG_LIKEED_KEY_PREFIX + str(blog_id), str(user_id))
+    if score:
+        return True
+    return False
+
+
+async def like_blog_redis(blog_id, user_id):
+    await aio_redis.zadd(settings.BLOG_LIKEED_KEY_PREFIX + str(blog_id), {str(user_id): time.time_ns()})
+
+
+async def unlike_blog_redis(blog_id, user_id):
+    await aio_redis.zrem(settings.BLOG_LIKEED_KEY_PREFIX + str(blog_id), str(user_id))
+
+
+async def get_top_like_user_ids(blog_id):
+    user_ids = await aio_redis.zrange(settings.BLOG_LIKEED_KEY_PREFIX + str(blog_id), 0, 4)
+    return user_ids
 
 
 if __name__ == '__main__':

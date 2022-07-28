@@ -81,6 +81,18 @@ async def me(
     return schemas.GenericResponseModel(data=schemas.UserBaseModel.parse_obj(user))
 
 
+@router.get('/info/{user_id}',
+            response_model=schemas.GenericResponseModel)
+async def info(
+        *,
+        user_id: int = Path()
+):
+    with Session(engine) as sess:
+        statement = select(models.User).where(models.UserInfo.user_id == user_id)
+        result = sess.exec(statement).first()
+    return schemas.GenericResponseModel(data=result)
+
+
 if __name__ == '__main__':
     async def do_job(u, lock):
         code = await send_code(phone=u.phone)

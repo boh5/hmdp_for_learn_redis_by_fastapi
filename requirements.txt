@@ -6,3 +6,4 @@ itsdangerous==2.1.2
 starsessions==1.2.3
 aioredis[hiredis]==2.0.1
 pytest==7.1.2
+python-multipart==0.0.5

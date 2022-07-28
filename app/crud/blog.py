@@ -20,11 +20,12 @@ from db.mysql import engine
 
 
 class BlogCRUD:
-    def create_blog(self, blog_model: models.Blog) -> None:
+    def create_blog(self, blog_model: models.Blog) -> models.Blog:
         with Session(engine) as sess:
             sess.add(blog_model)
             sess.commit()
             sess.refresh(blog_model)
+        return blog_model
 
     def like_blog(self, blog_id):
         with Session(engine) as sess:
@@ -32,6 +33,15 @@ class BlogCRUD:
             results = sess.exec(statement)
             blog = results.one()
             blog.liked += 1
+            sess.add(blog)
+            sess.commit()
+
+    def unlike_blog(self, blog_id):
+        with Session(engine) as sess:
+            statement = select(models.Blog).where(models.Blog.id == blog_id)
+            results = sess.exec(statement)
+            blog = results.one()
+            blog.liked -= 1
             sess.add(blog)
             sess.commit()
 

@@ -17,13 +17,13 @@ class Blog(SQLModel, table=True):
     __tablename__ = 'tb_blog'
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    shop_id: int = Field(nullable=False)
-    user_id: int = Field(nullable=False)
+    shop_id: int = Field(nullable=False, alias='shopId')
+    user_id: int = Field(None, nullable=False, alias='userId')
     title: str = Field(max_length=255, nullable=False)
     images: str = Field(max_length=2048, nullable=False)
     content: str = Field(max_length=2048, nullable=False)
-    liked: Optional[int] = None
-    comments: Optional[int] = None
+    liked: Optional[int] = 0
+    comments: Optional[int] = 0
     create_time: datetime.datetime = Field(default=datetime.datetime.now(), alias='createTime')
     update_time: datetime.datetime = Field(default_factory=datetime.datetime.now, alias='updateTime')
 

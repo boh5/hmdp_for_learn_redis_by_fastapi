@@ -19,6 +19,12 @@ from db.mysql import engine
 
 
 class UserCRUD:
+    def get_by_id(self, pk: int) -> Optional[models.User]:
+        with Session(engine) as sess:
+            statement = select(models.User).where(models.User.id == pk)
+            result = sess.exec(statement).first()
+        return result
+
     def get_user_by_phone(self, phone: str) -> Optional[models.User]:
         with Session(engine) as sess:
             statement = select(models.User).where(models.User.phone == phone)
