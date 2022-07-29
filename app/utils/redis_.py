@@ -142,5 +142,42 @@ class FeedUtils:
         return blog_ids, min_score, min_score_count
 
 
+class GeoUtils:
+    @staticmethod
+    async def load_shop_geo_data():
+        with Session(engine) as sess:
+            shops = sess.exec(
+                select(models.Shop)
+            ).all()
+        shop_type_dict = {}
+        for shop in shops:
+            if shop.type_id in shop_type_dict:
+                shop_type_dict[shop.type_id].append(shop)
+            else:
+                shop_type_dict[shop.type_id] = [shop]
+
+        for type_id, shop_list in shop_type_dict.items():
+            key = settings.SHOP_GEO_KEY_PREFIX + str(type_id)
+            values = []
+            for shop in shop_list:
+                values.extend([shop.x, shop.y, shop.id])
+            await aio_redis.geoadd(key, values)
+
+    @staticmethod
+    async def search_by_shop_type(shop_type_id, x, y, limit, offset):
+        count = offset + limit
+        response = await aio_redis.geosearch(
+            name=settings.SHOP_GEO_KEY_PREFIX + str(shop_type_id),
+            longitude=x,
+            latitude=y,
+            radius=5000,
+            sort='ASC',
+            count=count,
+            withdist=True,
+        )
+        return response[offset:]
+
+
 if __name__ == '__main__':
-    asyncio.run(save_shop_2_redis(1, 20))
+    # asyncio.run(save_shop_2_redis(1, 20))
+    asyncio.run(GeoUtils.load_shop_geo_data())

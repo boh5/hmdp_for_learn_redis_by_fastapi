@@ -12,3 +12,4 @@ from .blog import *
 from .user import *
 from .redis import *
 from .seckill_voucher import *
+from .shop import *

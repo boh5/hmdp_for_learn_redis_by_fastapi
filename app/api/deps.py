@@ -28,7 +28,9 @@ async def verify_user(authorization: str = Header()) -> schemas.UserBaseModel:
     return user
 
 
-async def try_user(authorization: str = Header()) -> Optional[schemas.UserBaseModel]:
+async def try_user(authorization: Optional[str] = Header(None)) -> Optional[schemas.UserBaseModel]:
+    if not authorization:
+        return None
     user_dict = await aio_redis.hgetall(get_login_user_obj_key(authorization))
     if not user_dict:
         return None

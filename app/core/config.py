@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     MYSQL_PASSWORD: str = 'root'
     MYSQL_DATABASE: str = 'hmdp'
 
-    MAX_PAGE_SIZE: int = 10
+    MAX_PAGE_SIZE: int = 5
 
     USER_NICK_NAME_PREFIX = 'user_'
 
@@ -47,6 +47,8 @@ class Settings(BaseSettings):
     BLOG_LIKED_KEY_PREFIX: str = 'hmdp:blog:liked:'
     FOLLOW_KEY_PREFIX: str = 'hmdp:follows:'
     FEED_KEY_PREFIX: str = 'hmdp:feed:'
+
+    SHOP_GEO_KEY_PREFIX: str = 'hmdp:geo:shop:'
 
 
 settings = Settings()

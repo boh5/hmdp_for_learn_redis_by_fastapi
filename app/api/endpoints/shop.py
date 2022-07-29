@@ -9,11 +9,13 @@
 """
 import asyncio
 import datetime
+import functools
 import threading
 from concurrent import futures
 from typing import Optional
 
 from fastapi import APIRouter, Path, Query, HTTPException, Body
+from pydantic import parse_obj_as
 from sqlmodel import Session, select, col
 from starlette.requests import Request
 from fastapi.background import BackgroundTasks
@@ -24,7 +26,8 @@ from app import schemas
 from core.config import settings
 from db.mysql import engine
 from utils.cache import CacheClient
-from utils.redis_ import aio_redis, get_cache_shop_key, lock, get_cache_lock_shop_key, unlock, save_shop_2_redis
+from utils.redis_ import aio_redis, get_cache_shop_key, lock, get_cache_lock_shop_key, unlock, save_shop_2_redis, \
+    GeoUtils
 
 router = APIRouter()
 
@@ -146,16 +149,33 @@ async def query_shop_by_id(
 async def query_shop_by_type(
         *,
         type_id: int = Query(alias='typeId'),
-        page: int = Query(1, alias='current')
+        page: int = Query(1, alias='current'),
+        x: Optional[float] = Query(None, description='longitude'),
+        y: Optional[float] = Query(None, description='latitude'),
 ):
     if page <= 0:
         page = 1
-    with Session(engine) as sess:
-        statement = select(models.Shop).where(models.Shop.type_id == type_id).limit(settings.MAX_PAGE_SIZE).offset(
-            page * settings.MAX_PAGE_SIZE - settings.MAX_PAGE_SIZE)
-        results = sess.exec(statement).all()
-    data = [r.dict(by_alias=True) for r in results]
-    return schemas.GenericResponseModel(data=data)
+    limit = settings.MAX_PAGE_SIZE
+    offset = (page - 1) * settings.MAX_PAGE_SIZE
+
+    if not x or not y:
+        with Session(engine) as sess:
+            statement = select(models.Shop).where(models.Shop.type_id == type_id).limit(limit).offset(offset)
+            shops = sess.exec(statement).all()
+            return schemas.GenericResponseModel(data=shops)
+    else:
+
+        shop_geo = await GeoUtils.search_by_shop_type(shop_type_id=type_id, x=x, y=y, limit=limit, offset=offset)
+        shop_id_geo_order = [int(i[0]) for i in shop_geo]
+        shop_distance_geo_order = [i[1] for i in shop_geo]
+        shops = crud.shop_crud.get_by_id_in(shop_id_geo_order)
+        shops.sort(key=functools.cmp_to_key(lambda i, j: shop_id_geo_order.index(i.id) - shop_id_geo_order.index(j.id)))
+        shops_with_distance = []
+        for i in range(len(shops)):
+            model = schemas.ShopWithDistanceModel.parse_obj(shops[i])
+            model.distance = shop_distance_geo_order[i]
+            shops_with_distance.append(model)
+        return schemas.GenericResponseModel(data=shops_with_distance)
 
 
 @router.get('/of/name',
