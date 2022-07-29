@@ -206,7 +206,29 @@ class SignUtils:
         return count
 
 
+class UvUtils:
+    @staticmethod
+    async def test_hyper_loglog():
+        # 测试前 redis 内存占用: 3012648
+        await aio_redis.delete('hll1')
+        values = []
+        tasks = []
+        for i in range(1000000):
+            j = i % 1000
+            values.append('user_' + str(i))
+            if j == 999:
+                tasks.append(asyncio.create_task(aio_redis.pfadd('hll1', *values)))
+                values = []
+        await asyncio.wait(tasks)
+        size = await aio_redis.pfcount('hll1')
+        print(size)
+        # print: 997593
+        # 997593 / 1000000 = 0.998
+        # 测试后 redis 内存占用: 3027000
+        # 3027000 - 3012648 = 14kb
+
+
 if __name__ == '__main__':
     # asyncio.run(save_shop_2_redis(1, 20))
-    asyncio.run(GeoUtils.load_shop_geo_data())
-  
+    # asyncio.run(GeoUtils.load_shop_geo_data())
+    asyncio.run(UvUtils.test_hyper_loglog())
