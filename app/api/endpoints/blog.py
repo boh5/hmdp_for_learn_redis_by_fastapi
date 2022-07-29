@@ -72,7 +72,10 @@ async def query_my_blog(
 ):
     user_id = user.id
     blogs = crud.blog_crud.list_blog(page=current, user_id=user_id)
-    return schemas.GenericResponseModel(data=blogs)
+    data = []
+    for blog in blogs:
+        data.append(await get_blog_all(blog, user))
+    return schemas.GenericResponseModel(data=data)
 
 
 @router.get('/of/user',
@@ -81,9 +84,13 @@ async def get_blog_of_user(
         *,
         user_id: int = Query(alias='id'),
         page: Optional[int] = Query(default=1, alias='current'),
+        user: schemas.UserBaseModel = Depends(deps.try_user),
 ):
     blogs = crud.blog_crud.list_blog(page=page, user_id=user_id)
-    return schemas.GenericResponseModel(data=blogs)
+    data = []
+    for blog in blogs:
+        data.append(await get_blog_all(blog, user))
+    return schemas.GenericResponseModel(data=data)
 
 
 @router.get('/of/follow',
