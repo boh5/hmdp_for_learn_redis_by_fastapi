@@ -50,5 +50,7 @@ class Settings(BaseSettings):
 
     SHOP_GEO_KEY_PREFIX: str = 'hmdp:geo:shop:'
 
+    USER_SIGN_KEY_PREFIX: str = 'hmdp:sign:'
+
 
 settings = Settings()

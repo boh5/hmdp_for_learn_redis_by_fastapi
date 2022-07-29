@@ -8,6 +8,7 @@
     :date: 2022/7/10
 """
 import asyncio
+import datetime
 import hashlib
 import random
 import uuid
@@ -23,7 +24,7 @@ from api import deps
 from app import schemas
 from core.config import settings
 from db.mysql import engine
-from utils.redis_ import aio_redis, get_login_code_key, get_login_user_obj_key
+from utils.redis_ import aio_redis, get_login_code_key, get_login_user_obj_key, SignUtils
 
 router = APIRouter()
 
@@ -79,6 +80,26 @@ async def me(
 
 ):
     return schemas.GenericResponseModel(data=schemas.UserBaseModel.parse_obj(user))
+
+
+@router.post('/sign',
+             response_model=schemas.GenericResponseModel)
+async def sign(
+        *,
+        user: schemas.UserBaseModel = Depends(deps.verify_user),
+):
+    await SignUtils.sign(datetime.datetime.now(), user.id)
+    return schemas.GenericResponseModel()
+
+
+@router.get('/sign/count',
+            response_model=schemas.GenericResponseModel)
+async def sign_count(
+        *,
+        user: schemas.UserBaseModel = Depends(deps.verify_user),
+):
+    count = await SignUtils.sign_count(datetime.datetime.now(), user.id)
+    return schemas.GenericResponseModel(data=count)
 
 
 @router.get('/{user_id}',

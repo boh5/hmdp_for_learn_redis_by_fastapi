@@ -178,6 +178,35 @@ class GeoUtils:
         return response[offset:]
 
 
+class SignUtils:
+
+    @staticmethod
+    def get_sign_key(now: datetime.datetime, user_id: int):
+        return f'{settings.USER_SIGN_KEY_PREFIX}{user_id}:{now.year:04}{now.month:02}'
+
+    @staticmethod
+    async def sign(now: datetime.datetime, user_id: int):
+        key = SignUtils.get_sign_key(now, user_id)
+        await aio_redis.setbit(key, now.day - 1, 1)
+
+    @staticmethod
+    async def sign_count(now: datetime.datetime, user_id: int) -> int:
+        key = SignUtils.get_sign_key(now, user_id)
+        resp = await aio_redis.execute_command('BITFIELD', key, 'GET', 'u' + str(now.day), 0)
+        if not resp:
+            return 0
+        count = 0
+        num = resp[0]
+        while num:
+            if num & 1 == 0:
+                break
+            else:
+                count += 1
+                num >>= 1
+        return count
+
+
 if __name__ == '__main__':
     # asyncio.run(save_shop_2_redis(1, 20))
     asyncio.run(GeoUtils.load_shop_geo_data())
+  
