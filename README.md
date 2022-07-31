@@ -12,7 +12,7 @@ python 做后台开发，因此在看课程的时候用 python 实现了一份�
 1. fastapi==0.78.0 : 后端框架
 2. sqlmodel==0.0.6 : orm，从版本号可看出该框架截至 2022-07-29 尚不十分成熟
 3. pymysql==1.0.2 : orm backend
-4. uvicorn==0.18.2 : WSGI 服务器，fastapi 依赖此启动
+4. uvicorn==0.18.2 : ASGI 服务器，fastapi 依赖此启动
 5. itsdangerous==2.1.2 : Starlette 的 SessionMiddleware 依赖
 6. starsessions==1.2.3 : 实现基于内存的 session. (fastapi 默认只支持基于 cookies 的 session)
 7. aioredis[hiredis]==2.0.1 : asyncio 的 redis 库，后弃用，由于发现该库以完全在 redis-py 中实现
