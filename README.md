@@ -7,6 +7,10 @@ python 做后台开发，因此在看课程的时候用 python 实现了一份�
 
 代码很多地方不够完善，特别随项目增长，很多地方需要重构的，我都没精力去搞了。如果有任何疑问或致命 bug 欢迎讨论。🥂
 
+### 学习笔记 📓
+
+欢迎来我的博客里看到我的[学习笔记](https://dilless.github.io/categories/redis/) 😊
+
 ### 依赖( requirements.txt ) ⚓
 
 1. fastapi==0.78.0 : 后端框架
