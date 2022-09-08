@@ -32,19 +32,19 @@ python 做后台开发，因此在看课程的时候用 python 实现了一份�
 
 ### 分支 🕎
 
-##### 每个章节的代码提交到独立的分支中，[master](https://github.com/dilless/hmdp_for_learn_redis_by_fastapi/tree/master) 含所有代码
+##### 每个章节的代码提交到独立的分支中，[master](https://github.com/boh5/hmdp_for_learn_redis_by_fastapi/tree/master) 含所有代码
 
 | 章节序号 | 章节名称            | 分支                                                                                                                                          |
 |------|-----------------|---------------------------------------------------------------------------------------------------------------------------------------------|
-| 1    | 短信登录            | [redis_based_login](https://github.com/dilless/hmdp_for_learn_redis_by_fastapi/tree/redis_based_login)                                      |
-| 2    | 商户查询缓存          | [query_cache](https://github.com/dilless/hmdp_for_learn_redis_by_fastapi/tree/query_cache)                                                  |
-| 3    | 优惠卷秒杀           | [seckill](https://github.com/dilless/hmdp_for_learn_redis_by_fastapi/tree/seckill)                                                          |
-| 4    | 分布式锁            | [distributed-lock](https://github.com/dilless/hmdp_for_learn_redis_by_fastapi/tree/distributed-lock)                                        |
-| 5    | 分布式锁-redission  | [distributed-lock](https://github.com/dilless/hmdp_for_learn_redis_by_fastapi/tree/distributed-lock) ( python 没有类似 redission 的库，因此未完全实现该章节) |
-| 6    | 秒杀优化            | [seckill-optimize](https://github.com/dilless/hmdp_for_learn_redis_by_fastapi/tree/seckill-optimize)                                        |
-| 7    | Redis消息队列       | [redis-mq](https://github.com/dilless/hmdp_for_learn_redis_by_fastapi/tree/redis-mq)                                                        |
-| 8    | 达人探店            | [blog](https://github.com/dilless/hmdp_for_learn_redis_by_fastapi/tree/blog)                                                                |
-| 9    | 好友关注            | [follow](https://github.com/dilless/hmdp_for_learn_redis_by_fastapi/tree/follow)                                                            |
-| 10   | 附近商户            | [geo](https://github.com/dilless/hmdp_for_learn_redis_by_fastapi/tree/geo)                                                                  |
-| 11   | 用户签到            | [user-sign](https://github.com/dilless/hmdp_for_learn_redis_by_fastapi/tree/user-sign)                                                      |
-| 12   | UV统计            | [uv-log](https://github.com/dilless/hmdp_for_learn_redis_by_fastapi/tree/uv-log)                                                            |
+| 1    | 短信登录            | [redis_based_login](https://github.com/boh5/hmdp_for_learn_redis_by_fastapi/tree/redis_based_login)                                      |
+| 2    | 商户查询缓存          | [query_cache](https://github.com/boh5/hmdp_for_learn_redis_by_fastapi/tree/query_cache)                                                  |
+| 3    | 优惠卷秒杀           | [seckill](https://github.com/boh5/hmdp_for_learn_redis_by_fastapi/tree/seckill)                                                          |
+| 4    | 分布式锁            | [distributed-lock](https://github.com/boh5/hmdp_for_learn_redis_by_fastapi/tree/distributed-lock)                                        |
+| 5    | 分布式锁-redission  | [distributed-lock](https://github.com/boh5/hmdp_for_learn_redis_by_fastapi/tree/distributed-lock) ( python 没有类似 redission 的库，因此未完全实现该章节) |
+| 6    | 秒杀优化            | [seckill-optimize](https://github.com/boh5/hmdp_for_learn_redis_by_fastapi/tree/seckill-optimize)                                        |
+| 7    | Redis消息队列       | [redis-mq](https://github.com/boh5/hmdp_for_learn_redis_by_fastapi/tree/redis-mq)                                                        |
+| 8    | 达人探店            | [blog](https://github.com/boh5/hmdp_for_learn_redis_by_fastapi/tree/blog)                                                                |
+| 9    | 好友关注            | [follow](https://github.com/boh5/hmdp_for_learn_redis_by_fastapi/tree/follow)                                                            |
+| 10   | 附近商户            | [geo](https://github.com/boh5/hmdp_for_learn_redis_by_fastapi/tree/geo)                                                                  |
+| 11   | 用户签到            | [user-sign](https://github.com/boh5/hmdp_for_learn_redis_by_fastapi/tree/user-sign)                                                      |
+| 12   | UV统计            | [uv-log](https://github.com/boh5/hmdp_for_learn_redis_by_fastapi/tree/uv-log)                                                            |
