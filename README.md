@@ -9,7 +9,7 @@ python 做后台开发，因此在看课程的时候用 python 实现了一份�
 
 ### 学习笔记 📓
 
-欢迎来我的博客里看到我的[学习笔记](https://boh5.com/categories/redis/) 😊
+欢迎来我的博客里看到我的[学习笔记](https://boh5.github.io/categories/redis/) 😊
 
 ### 依赖( requirements.txt ) ⚓
 
